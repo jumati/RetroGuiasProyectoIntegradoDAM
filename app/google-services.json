@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1078098049118",
+    "project_id": "retroguias-e666a",
+    "storage_bucket": "retroguias-e666a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1078098049118:android:7e65a400b5dfd767c61ccf",
+        "android_client_info": {
+          "package_name": "com.jm.retroguias"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBAOd9gxoZz3SHdRSDlsFa7DRqhG4d9boM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
