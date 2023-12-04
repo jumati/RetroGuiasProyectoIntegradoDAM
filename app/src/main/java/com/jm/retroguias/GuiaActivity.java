@@ -18,12 +18,17 @@ public class GuiaActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_guia);
+        Intent intent = getIntent();
 
         title_textView = (TextView) findViewById(R.id.guia_title);
-        platform_textView = (TextView) findViewById(R.id.guia_platform_text);
+        platform_textView = (TextView) findViewById(R.id.guia_platform);
         company_textView = (TextView) findViewById(R.id.guia_company);
         volver_button = (Button) findViewById(R.id.guides_volver_button);
 
+        title_textView.setText(intent.getStringExtra("guideName"));
+        platform_textView.setText(intent.getStringExtra("platformName"));
+        company_textView.setText(intent.getStringExtra("companyName"));
+        
         // Ir a LoginActivity
         volver();
     } // Fin onCreate

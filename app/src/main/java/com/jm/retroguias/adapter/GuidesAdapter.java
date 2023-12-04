@@ -1,5 +1,6 @@
 package com.jm.retroguias.adapter;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,10 +25,20 @@ public class GuidesAdapter extends FirestoreRecyclerAdapter<Guides, GuidesAdapte
     public GuidesAdapter(@NonNull FirestoreRecyclerOptions<Guides> options) {
         super(options);
     }
+    private OnClickListener onClickListener;
 
     @Override
     protected void onBindViewHolder(@NonNull ViewHolder holder, int position, @NonNull Guides guide) {
         holder.title_textView.setText(guide.getGuide_name());
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (onClickListener != null) {
+                    onClickListener.onClick(position, guide);
+                }
+            }
+        });
 
         /*
         // Acceder a un dato para asignarlo a platform_tetView
@@ -51,6 +62,14 @@ public class GuidesAdapter extends FirestoreRecyclerAdapter<Guides, GuidesAdapte
 
 
         holder.platform_textView.setText(guide.getPlatform_id());
+    }
+
+    public void setOnClickListener(OnClickListener onClickListener) {
+        this.onClickListener = onClickListener;
+    }
+
+    public interface OnClickListener {
+        void onClick(int position, Guides model);
     }
 
     /**

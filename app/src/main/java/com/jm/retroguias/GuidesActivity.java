@@ -2,6 +2,7 @@ package com.jm.retroguias;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -23,8 +24,6 @@ public class GuidesActivity extends AppCompatActivity {
     private RecyclerView recycler;
     private GuidesAdapter guidesAdapter;
     private FirebaseFirestore firestore;
-
-    private FirebaseAuth auth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +47,18 @@ public class GuidesActivity extends AppCompatActivity {
 
         guidesAdapter = new GuidesAdapter(firestoreRecyclerOptions);
         guidesAdapter.notifyDataSetChanged();
+
         recycler.setAdapter(guidesAdapter);
+        guidesAdapter.setOnClickListener(new GuidesAdapter.OnClickListener() {
+            @Override
+            public void onClick(int position, Guides guide) {
+                Intent intent = new Intent(GuidesActivity.this, GuiaActivity.class);
+                intent.putExtra("guideName", guide.getGuide_name());
+                intent.putExtra("platformName", guide.getPlatform_id());
+                intent.putExtra("companyName", guide.getCompany_id());
+                startActivity(intent);
+            }
+        });
 
 
         // Ir a Editar Usuario
@@ -126,7 +136,10 @@ public class GuidesActivity extends AppCompatActivity {
         logout_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                FirebaseAuth auth = FirebaseAuth.getInstance();
+
                 auth.signOut();
+
                 startActivity(new Intent(GuidesActivity.this, LoginActivity.class));
             }
         });
