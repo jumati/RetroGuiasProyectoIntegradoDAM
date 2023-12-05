@@ -1,11 +1,14 @@
 package com.jm.retroguias;
 
+import android.content.ClipData;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -24,17 +27,12 @@ public class GuidesActivity extends AppCompatActivity {
     private RecyclerView recycler;
     private GuidesAdapter guidesAdapter;
     private FirebaseFirestore firestore;
+    private ClipData.Item editar_usuario_item, favoritos_item, usuarios_item, logout_item;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_guides);
-
-        editar_usuario_button = (Button) findViewById(R.id.guides_editar_usuario_button);
-        favoritos_button = (Button) findViewById(R.id.guides_favoritos_button);
-        usuarios_button = (Button) findViewById(R.id.guides_usuarios_button);
-        recargar_button = (Button) findViewById(R.id.guides_recargar_button);
-        logout_button = (Button) findViewById(R.id.guides_logout_button);
 
         firestore = FirebaseFirestore.getInstance();
         recycler = (RecyclerView) findViewById(R.id.guides_recycler);
@@ -59,16 +57,59 @@ public class GuidesActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+    }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.guides_menu, menu);
+        return true;
+    }
 
-        // Ir a Editar Usuario
-        GoEditarUsuario();
-        // Ir a Favoritos
-        GoFavoritos();
-        // Ir a Usuarios
-        GoUsuarios();
-        // Desloguea al usuario y vuelve a LoginActivity
-        LogOut();
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.menu_editar_usuario)
+        {
+            startActivity(new Intent(GuidesActivity.this, EditarUsuarioActivity.class));
+        }
+        else if (id == R.id.menu_favoritos)
+        {
+            startActivity(new Intent(GuidesActivity.this, FavoritosActivity.class));
+        }
+        else if (id == R.id.menu_lista_usuarios)
+        {
+            startActivity(new Intent(GuidesActivity.this, UsersActivity.class));
+        }
+        else if (id == R.id.menu_logout)
+        {
+            FirebaseAuth auth = FirebaseAuth.getInstance();
+            auth.signOut();
+            startActivity(new Intent(GuidesActivity.this, LoginActivity.class));
+        }
+        return true;
+
+        /*
+        // Debido a un error de las últimas versiones de Android, el switch()
+        // da errores al reconocer el id de los menu y las barras con items.
+        switch (item.getItemId())
+        {
+            case R.id.menu_editar_usuario:
+                startActivity(new Intent(GuidesActivity.this, EditarUsuarioActivity.class));
+                break;
+            case R.id.menu_favoritos:
+                startActivity(new Intent(GuidesActivity.this, FavoritosActivity.class));
+                break;
+            case R.id.menu_lista_usuarios:
+                startActivity(new Intent(GuidesActivity.this, UsersActivity.class));
+                break;
+            case R.id.menu_logout:
+                FirebaseAuth auth = FirebaseAuth.getInstance();
+                auth.signOut();
+                startActivity(new Intent(GuidesActivity.this, LoginActivity.class));
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+         */
     }
 
     @Override
@@ -83,70 +124,5 @@ public class GuidesActivity extends AppCompatActivity {
         guidesAdapter.stopListening();
     }
 
-    /*
-     * CAMBIOS DE PANTALLA
-     */
 
-    /**
-     * Ir a EditarUsuarioActivity
-     */
-    private void GoEditarUsuario()
-    {
-        editar_usuario_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(GuidesActivity.this, EditarUsuarioActivity.class));
-            }
-        });
-    }
-
-    /**
-     * Ir a FavoritosActivity
-     */
-    private void GoFavoritos()
-    {
-        favoritos_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(GuidesActivity.this, FavoritosActivity.class));
-            }
-        });
-    }
-
-    /**
-     * Ir a UsuariosActivity
-     */
-    private void GoUsuarios()
-    {
-        usuarios_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(GuidesActivity.this, UsersActivity.class));
-            }
-        });
-    }
-
-    /**
-     * Cerrar Sesión
-     *
-     * Cierra la sesión del usuario actual y devuelve a LoginActivity
-     */
-    private void LogOut()
-    {
-        logout_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                FirebaseAuth auth = FirebaseAuth.getInstance();
-
-                auth.signOut();
-
-                startActivity(new Intent(GuidesActivity.this, LoginActivity.class));
-            }
-        });
-    }
-
-
-    /*
-     * FIN CAMBIOS DE PANTALLA
-     */
 }

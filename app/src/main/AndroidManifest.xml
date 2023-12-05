@@ -49,6 +49,10 @@
         <activity android:name=".UsersActivity"
             android:exported="false">
         </activity>
+
+        <activity android:name=".EliminarUsuarioActivity"
+            android:exported="false">
+        </activity>
     </application>
 
 </manifest>

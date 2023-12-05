@@ -16,6 +16,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
+import com.jm.retroguias.model.Users;
 
 import java.util.regex.Pattern;
 
@@ -25,7 +26,7 @@ public class EditarUsuarioActivity extends AppCompatActivity {
 
     private EditText name_editText, last_name_editText, email_editText, phone_editText,
             old_password_editText, new_password_editText, confirm_password_editText;
-    private Button guardar_button, volver_button;
+    private Button guardar_button, volver_button, eliminar_button;
     FirebaseAuth auth;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,6 +41,7 @@ public class EditarUsuarioActivity extends AppCompatActivity {
         confirm_password_editText = (EditText) findViewById(R.id.editar_usuario_confirm_new_password);
         phone_editText = (EditText) findViewById(R.id.editar_usuario_phone);
         guardar_button = (Button) findViewById(R.id.editar_usuario_guardar_cambios_button);
+        eliminar_button = (Button) findViewById(R.id.editar_usuario_eliminar_usuario);
         volver_button = (Button) findViewById(R.id.editar_usuario_volver_button);
 
         auth = FirebaseAuth.getInstance();
@@ -47,6 +49,8 @@ public class EditarUsuarioActivity extends AppCompatActivity {
 
         // Guardar cambios
         guardar();
+        // Eliminar usuario
+        eliminarUsuario();
         // Ir a LoginActivity
         volver();
     } // Fin onCreate
@@ -86,6 +90,22 @@ public class EditarUsuarioActivity extends AppCompatActivity {
                 new_password_editText.setText("");
                 confirm_password_editText.setText("");
                 phone_editText.setText("");
+            }
+        });
+    }
+
+    /**
+     * Eliminar Usuario
+     *
+     * Lleva a una pantalla donde se confirman el email y la contraseña del usuario.
+     * Una vez condirmado, se elimina el usuario.
+     */
+    private void eliminarUsuario()
+    {
+        eliminar_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(EditarUsuarioActivity.this, EliminarUsuarioActivity.class));
             }
         });
     }

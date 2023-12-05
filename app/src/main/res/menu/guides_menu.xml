@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/menu_new_guide"
+        android:title="Favoritos"
+        android:fontFamily="@font/aaa"
+        android:textColor="@color/background"
+        android:icon="@drawable/ic_menu_new_guide"
+        app:showAsAction="ifRoom"/>
+
+    <item
+        android:id="@+id/menu_editar_usuario"
+        android:title="Editar Usuario"
+        android:fontFamily="@font/aaa"
+        android:textColor="@color/background"
+        android:icon="@drawable/ic_menu_editar_usuario"/>
+
+    <item
+        android:id="@+id/menu_favoritos"
+        android:title="Favoritos"
+        android:fontFamily="@font/aaa"
+        android:textColor="@color/background"
+        android:icon="@drawable/ic_menu_fav"/>
+
+    <item
+        android:id="@+id/menu_lista_usuarios"
+        android:title="Lista de Usuarios"
+        android:fontFamily="@font/aaa"
+        android:textColor="@color/background"
+        android:icon="@drawable/ic_menu_usuarios"/>
+
+    <item
+        android:id="@+id/menu_logout"
+        android:title="Logout"
+        android:fontFamily="@font/aaa"
+        android:textColor="@color/background"
+        android:icon="@drawable/ic_menu_logout"/>
+</menu>

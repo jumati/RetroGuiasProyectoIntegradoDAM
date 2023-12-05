@@ -78,7 +78,6 @@ public class UsersAdapter extends FirestoreRecyclerAdapter<Users, UsersAdapter.V
             name_textView = itemView.findViewById(R.id.item_user_name);
             last_name_textView = itemView.findViewById(R.id.item_user_last_name);
             platform_textView = itemView.findViewById(R.id.item_user_platform);
-            del_img = itemView.findViewById(R.id.item_user_delete);
 
 
 

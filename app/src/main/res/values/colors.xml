@@ -6,4 +6,5 @@
     <color name="background_button">#2E4FFF</color>
     <color name="background_items">#6079FF</color>
     <color name="transparent">#00FFFFFF</color>
+    <color name="eliminar">#FFFA5656</color>
 </resources>
