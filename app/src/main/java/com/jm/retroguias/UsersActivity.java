@@ -44,6 +44,15 @@ public class UsersActivity extends AppCompatActivity {
         usersAdapter.notifyDataSetChanged();
         recycler.setAdapter(usersAdapter);
 
+        usersAdapter.setOnClickListener(new UsersAdapter.OnClickListener() {
+            @Override
+            public void onClick(int position, Users user) {
+                Intent intent = new Intent(UsersActivity.this, EditarUsuarioActivity.class);
+                intent.putExtra("guideName", user.getId());
+                startActivity(intent);
+            }
+        });
+
         // Ir a LoginActivity
         volver();
     }

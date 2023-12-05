@@ -3,7 +3,6 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="background">#2A3050</color>
-    <!-- <color name="background">@drawable/fondo2</color> -->
     <color name="background_button">#2E4FFF</color>
     <color name="background_items">#6079FF</color>
     <color name="transparent">#00FFFFFF</color>
