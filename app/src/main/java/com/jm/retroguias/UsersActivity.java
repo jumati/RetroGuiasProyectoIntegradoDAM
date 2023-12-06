@@ -10,6 +10,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.jm.retroguias.adapter.GuidesAdapter;
@@ -20,7 +22,8 @@ import com.jm.retroguias.model.Users;
 public class UsersActivity extends AppCompatActivity {
 
     private Button volver_button;
-
+    FirebaseDatabase database;
+    DatabaseReference databaseRef;
     private RecyclerView recycler;
     private UsersAdapter usersAdapter;
     private FirebaseFirestore firestore;
@@ -35,6 +38,11 @@ public class UsersActivity extends AppCompatActivity {
         recycler = (RecyclerView) findViewById(R.id.users_recycler);
         recycler.setLayoutManager(new LinearLayoutManager(this));
         Query users_query = firestore.collection("Users");
+
+        // Conexión con la base de datos
+        database = FirebaseDatabase.getInstance();
+        // Referencia a la tabla Users de la clase Users.java
+        databaseRef = database.getReference(Users.class.getSimpleName());
 
         FirestoreRecyclerOptions<Users> firestoreRecyclerOptions =
                 new FirestoreRecyclerOptions.Builder<Users>()

@@ -32,7 +32,6 @@ public class RegistroActivity extends AppCompatActivity {
 
     FirebaseDatabase database;
     DatabaseReference databaseRef;
-    FirebaseFirestore firestore;
     FirebaseAuth auth;
     FirebaseUser firebaseUser;
     private EditText name_editText, last_name_editText, email_editText,
@@ -101,25 +100,8 @@ public class RegistroActivity extends AppCompatActivity {
 
                         // Se crea un objeto Users que contenga todos los campos
                         Users user = new Users(email, name, last_name, phone);
+
                         // Se insertan los datos en la base de datos
-
-                        /*
-                        //databaseRef.push().setValue(user);
-
-
-
-                        Map<String, Object> mapUser = new HashMap<>();
-                        mapUser.put("id", UUID.randomUUID().toString());
-                        mapUser.put("email", email);
-                        mapUser.put("name", name);
-                        mapUser.put("last_name", last_name);
-                        mapUser.put("phone", phone);
-                        List<String> fav = new ArrayList<>();
-                        mapUser.put("fav", fav);
-
-                        databaseRef.child("Users").push().setValue(mapUser);
-                         */
-
                         user.setId(UUID.randomUUID().toString());
                         user.setEmail(email);
                         user.setName(name);
@@ -128,8 +110,18 @@ public class RegistroActivity extends AppCompatActivity {
                         List<String> fav = new ArrayList<>();
                         user.setFav(fav);
 
-                        databaseRef.child("Users")
-                                .child(user.getId()).setValue(user);
+                        databaseRef.child(user.getId()).setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                if(!task.isSuccessful())
+                                {
+                                    // Se muestra un mensaje de que el usuario se ha registrado correctamente.
+                                    Toast.makeText(RegistroActivity.this,
+                                            "Se ha producido un error al añadir al usuario a la tabla.",
+                                            Toast.LENGTH_LONG).show();
+                                }
+                            }
+                        });;
 
 
                         // Se cierra sesión para evitar que se mantenga logeado el usuario

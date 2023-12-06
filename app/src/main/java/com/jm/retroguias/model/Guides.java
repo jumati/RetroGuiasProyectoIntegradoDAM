@@ -11,8 +11,9 @@ public class Guides {
 
     public Guides() {}
 
-    public Guides(String guide_name, String platform_id, String company_id, File guide_pdf)
+    public Guides(String guide_id, String guide_name, String platform_id, String company_id)
     {
+        this.guide_id = guide_id;
         this.guide_name = guide_name;
         this.platform_id = platform_id;
         this.company_id = company_id;
@@ -21,6 +22,10 @@ public class Guides {
 
     public String getGuide_id() {
         return guide_id;
+    }
+
+    public void setGuide_id(String guide_id) {
+        this.guide_id = guide_id;
     }
 
     public String getGuide_name() {

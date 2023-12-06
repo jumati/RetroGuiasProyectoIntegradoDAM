@@ -6,12 +6,17 @@ public class Companies {
 
     public Companies() {}
 
-    public Companies(String company_name) {
+    public Companies(String company_id, String company_name) {
+        this.company_id = company_id;
         this.company_name = company_name;
     }
 
     public String getCompany_id() {
         return company_id;
+    }
+
+    public void setCompany_id(String company_id) {
+        this.company_id = company_id;
     }
 
     public String getCompany_name() {
@@ -24,9 +29,6 @@ public class Companies {
 
     @Override
     public String toString() {
-        return "Company{" +
-                "company_id='" + company_id + '\'' +
-                ", company_name='" + company_name + '\'' +
-                '}';
+        return company_name;
     }
 }

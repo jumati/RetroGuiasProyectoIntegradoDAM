@@ -159,14 +159,14 @@
         android:layout_height="wrap_content"
         android:background="@color/transparent"
         android:fontFamily="@font/aaa"
-        android:text="Eliminar\nusuario"
+        android:text="Eliminar\nUsuario"
         android:textColor="@color/eliminar"
         android:textSize="11sp"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        android:visibility="visible"/>
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/editar_usuario_volver_button"

@@ -3,8 +3,12 @@ package com.jm.retroguias;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -16,8 +20,11 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.jm.retroguias.model.Companies;
 import com.jm.retroguias.model.Guides;
@@ -25,30 +32,42 @@ import com.jm.retroguias.model.Platforms;
 import com.jm.retroguias.model.Users;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class NuevaGuiaActivity extends AppCompatActivity {
 
-    FirebaseDatabase database;
+    // Al utilizar un único DatabaseReference, los datos se mezclan.
+    // Al separar un DatabaseReference para cada tabla funciona correctamente.
     DatabaseReference guideRef, platformRef, companyRef;
-    FirebaseFirestore firestore;
-    FirebaseAuth auth;
-    FirebaseUser firebaseUser;
-    private EditText name_editText, platform_editText, company_editText;
+
+    FirebaseDatabase database;
+    private EditText name_editText;
     private Button guardar_button, limpiar_button, volver_button;
+    private String platform_selected, company_selected;
+    Spinner spinner_platform, spinner_company;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_nueva_guia);
         name_editText = (EditText) findViewById(R.id.nueva_guia_name);
-        platform_editText = (EditText) findViewById(R.id.nueva_guia_platform);
-        company_editText = (EditText) findViewById(R.id.nueva_guia_company);
+        // Botones
         guardar_button = (Button) findViewById(R.id.nueva_guia_guardar);
         limpiar_button = (Button) findViewById(R.id.nueva_guia_limpiar);
         volver_button = (Button) findViewById(R.id.nueva_guia_volver_button);
+        // Spiner de Plataformas
+        spinner_platform = (Spinner) findViewById(R.id.nueva_guia_spinner_platform);
+        platformRef = FirebaseDatabase.getInstance().getReference();
+        // Spiner de Compañías
+        spinner_company = (Spinner) findViewById(R.id.nueva_guia_spinner_company);
+        companyRef = FirebaseDatabase.getInstance().getReference();
 
         FirebaseApp.initializeApp(this);
+
+        spinnerPlatform();
+        spinnerCompany();
 
 
         // Botón Guardar
@@ -57,7 +76,11 @@ public class NuevaGuiaActivity extends AppCompatActivity {
         limpiarCampos();
         // Ir a LoginActivity
         volver();
-    }
+    } // onCreate
+
+
+
+
 
     /**
      * Registra la nueva guía.
@@ -67,12 +90,15 @@ public class NuevaGuiaActivity extends AppCompatActivity {
      */
     private void registrarGuia(String platform_id, String company_id)
     {
-        File pdf = null;
-        Guides guide = new Guides(name_editText.getText().toString().trim(),
-                platform_id, company_id, pdf);
+        Guides guide = new Guides(UUID.randomUUID().toString(), name_editText.getText().toString().trim(),
+                platform_id, company_id);
 
-        platformRef.child("Guides")
-                .child(guide.getGuide_id()).setValue(guide).addOnCompleteListener(new OnCompleteListener<Void>() {
+        // Conexión con la base de datos
+        database = FirebaseDatabase.getInstance();
+        // Referencia a la tabla Users de la clase Users.java
+        guideRef = database.getReference(Guides.class.getSimpleName());
+
+        guideRef.child(guide.getGuide_id()).setValue(guide).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if(task.isSuccessful())
@@ -81,6 +107,8 @@ public class NuevaGuiaActivity extends AppCompatActivity {
                             Toast.makeText(NuevaGuiaActivity.this,
                                     "Guía registrada correctamente.",
                                     Toast.LENGTH_LONG).show();
+                            // Limpiamos el campo name_editText
+                            name_editText.setText("");
                         }
                         else
                         {
@@ -90,51 +118,16 @@ public class NuevaGuiaActivity extends AppCompatActivity {
                         }
                     }
                 });
-    }
-
-    /**
-     * Registra la nueva plataforma.
-     *
-     * Registra una nueva plataforma.
-     * Devuelve la id de la nueva plataforma.
-     */
-    private String registrarPlataforma()
-    {
-        Platforms platform;
-        platform = new Platforms(platform_editText.getText().toString().trim());
-
-        platformRef.child("Platforms")
-                .child(platform.getPlatform_id()).setValue(platform);
-
-        return platform.getPlatform_id();
-    }
-
-    /**
-     * Registra la nueva compañía.
-     *
-     * Registra una nueva compañía.
-     * Devuelve la id de la nueva compañía.
-     */
-    private String registrarCompany()
-    {
-        Companies company;
-        company = new Companies(company_editText.getText().toString().trim());
-
-        // Si la guía no existe, se registrará una nueva.
-        if(true)
-        {
-            companyRef.child("Companies")
-                    .child(company.getCompany_id()).setValue(company);
-        }
-
-        return company.getCompany_id();
-    }
+    } // Fin registrarGuia()
 
 
     /**
      * Guardar cambios
      *
-     * Guarda los cambios
+     * Registra la nueva guía en la base de datos seleccionando la plataforma y compañía
+     * Se llama al método registrarGuia al que se le añaden como parámetros
+     * los métodos registrarPlataforma() y registrarCompany() que devuelven las id
+     * de cada dato.
      */
     private void guardar()
     {
@@ -147,12 +140,15 @@ public class NuevaGuiaActivity extends AppCompatActivity {
                 {
                     if(sizeNameValidation())
                     {
-                        // Se insertan los datos
+                        // Se llama al método que registra las guías introduciendo
+                        // como parámetros las id de la plataforma y la compañía seleccionadas.
+                        registrarGuia(platform_selected, company_selected);
                     }
                 }
             }
         });
     }
+
 
     /**
      * Limpiar campos
@@ -165,8 +161,6 @@ public class NuevaGuiaActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 name_editText.setText("");
-                platform_editText.setText("");
-                company_editText.setText("");
             }
         });
     }
@@ -184,6 +178,112 @@ public class NuevaGuiaActivity extends AppCompatActivity {
             }
         });
     }
+
+
+    /*
+     * SPINNERS
+     */
+
+    /**
+     * Spinner de Plataformas
+     *
+     * Almacena los datos de la tabla Platform en una lista,
+     * luego muestra la lista en el spiner,
+     * por último, guarda el campo seleccionado en una variable String.
+     */
+    private void spinnerPlatform()
+    {
+        final List<Platforms> plataformas = new ArrayList<>();
+        platformRef.child("Platforms").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(snapshot.exists())
+                {
+                    for (DataSnapshot snapshot2: snapshot.getChildren())
+                    {
+                        String id = snapshot2.getKey();
+                        String name = snapshot2.child("platform_name").getValue().toString();
+                        plataformas.add(new Platforms(id, name));
+                    }
+
+                    ArrayAdapter<Platforms> arrayAdapterPlatform = new ArrayAdapter<>(NuevaGuiaActivity.this, androidx.appcompat.R.layout.support_simple_spinner_dropdown_item, plataformas);
+                    spinner_platform.setAdapter(arrayAdapterPlatform);
+                    spinner_platform.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                        @Override
+                        public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                            platform_selected = String.valueOf(adapterView.getItemIdAtPosition(i));
+                        }
+
+                        @Override
+                        public void onNothingSelected(AdapterView<?> adapterView) {
+
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(NuevaGuiaActivity.this,
+                        "Se ha producido un error al leer los datos del spinner de Plataformas.",
+                        Toast.LENGTH_LONG).show();
+            }
+        });
+    } // Fin spinnerPlatform()
+
+
+    /**
+     * Spinner de Plataformas
+     *
+     * Almacena los datos de la tabla Platform en una lista,
+     * luego muestra la lista en el spiner,
+     * por último, guarda el campo seleccionado en una variable String.
+     */
+    private void spinnerCompany()
+    {
+        final List<Companies> companies = new ArrayList<>();
+        companyRef.child("Companies").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(snapshot.exists())
+                {
+                    for (DataSnapshot snapshot2: snapshot.getChildren())
+                    {
+                        String id = snapshot2.getKey();
+                        String name = snapshot2.child("company_name").getValue().toString();
+                        companies.add(new Companies(id, name));
+                    }
+
+                    ArrayAdapter<Companies> arrayAdapterCompany = new ArrayAdapter<>(NuevaGuiaActivity.this, androidx.appcompat.R.layout.support_simple_spinner_dropdown_item, companies);
+                    spinner_company.setAdapter(arrayAdapterCompany);
+                    spinner_company.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                        @Override
+                        public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                            company_selected = String.valueOf(adapterView.getItemIdAtPosition(i));
+                        }
+
+                        @Override
+                        public void onNothingSelected(AdapterView<?> adapterView) {
+
+                        }
+                    });
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(NuevaGuiaActivity.this,
+                        "Se ha producido un error al leer los datos del spinner de Plataformas.",
+                        Toast.LENGTH_LONG).show();
+            }
+        });
+    } // Fin spinnerCompany()
+
+    /*
+     * FIN SPINNERS
+     */
+
+
+
 
     /*
      * VALIDACIONES
@@ -204,20 +304,6 @@ public class NuevaGuiaActivity extends AppCompatActivity {
             name_editText.setError("Introduce tu nombre.");
         }
 
-        if(platform_editText.getText().toString().trim().isEmpty())
-        {
-            empty = true;
-            // Señalamos el error con un mensaje y marcando el campo en rojo
-            platform_editText.setError("Introduce tus apellidos.");
-        }
-
-        if(company_editText.getText().toString().trim().isEmpty())
-        {
-            empty = true;
-            // Señalamos el error con un mensaje y marcando el campo en rojo
-            company_editText.setError("Introduce un email.");
-        }
-
         if(empty)
         {
             // Si hay campos vacíos se muestra un mensaje.
@@ -229,48 +315,24 @@ public class NuevaGuiaActivity extends AppCompatActivity {
     }
 
     /**
-     * Validar longitud name, platform_editText y company_editText.
+     * Validar longitud name..
      *
-     * Se pondrá una longitud mínima y máxima para cada campo.
+     * Se pondrá una longitud mínima y máxima para el campo.
      */
     private boolean sizeNameValidation()
     {
         boolean validated = true;
 
         // Validación para name_editText
-        if(name_editText.getText().toString().trim().length() > 24
+        if(name_editText.getText().toString().trim().length() > 50
                 || name_editText.getText().toString().trim().length() < 4)
         {
             validated = false;
             // Si es incorrecto se muestra un mensaje
             // Señalamos el error con un mensaje y marcando el campo en rojo
-            name_editText.setError("El nombre de la guía debe contener entre 4 y 24 caracteres.");
+            name_editText.setError("El nombre de la guía debe contener entre 4 y 50 caracteres.");
             // Se limpia el campo
             name_editText.setText("");
-        }
-
-        // Validación para platform_editText
-        if(platform_editText.getText().toString().trim().length() > 14
-                || platform_editText.getText().toString().trim().length() < 3)
-        {
-            validated = false;
-            // Si es incorrecto se muestra un mensaje
-            // Señalamos el error con un mensaje y marcando el campo en rojo
-            platform_editText.setError("El nombre de la plataforma debe contener entre 3 y 14 caracteres.");
-            // Se limpia el campo
-            platform_editText.setText("");
-        }
-
-        // Validación para company_editText
-        if(company_editText.getText().toString().trim().length() > 14
-                || company_editText.getText().toString().trim().length() < 3)
-        {
-            validated = false;
-            // Si es incorrecto se muestra un mensaje
-            // Señalamos el error con un mensaje y marcando el campo en rojo
-            company_editText.setError("El nombre de la compañía debe contener entre 3 y 14 caracteres.");
-            // Se limpia el campo
-            company_editText.setText("");
         }
 
         return validated;

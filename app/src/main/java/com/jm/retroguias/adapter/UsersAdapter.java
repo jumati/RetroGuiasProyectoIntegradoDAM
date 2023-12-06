@@ -12,7 +12,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.jm.retroguias.R;
-import com.jm.retroguias.model.Guides;
 import com.jm.retroguias.model.Users;
 
 public class UsersAdapter extends FirestoreRecyclerAdapter<Users, UsersAdapter.ViewHolder> {

@@ -13,7 +13,7 @@ public class GuiaActivity extends AppCompatActivity {
 
     TextView title_textView,platform_textView, company_textView;
 
-    private Button volver_button;
+    private Button volver_button, eliminar_button;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -23,12 +23,16 @@ public class GuiaActivity extends AppCompatActivity {
         title_textView = (TextView) findViewById(R.id.guia_title);
         platform_textView = (TextView) findViewById(R.id.guia_platform);
         company_textView = (TextView) findViewById(R.id.guia_company);
+        eliminar_button = (Button) findViewById(R.id.guia_eliminar_guia);
         volver_button = (Button) findViewById(R.id.guides_volver_button);
 
         title_textView.setText(intent.getStringExtra("guideName"));
         platform_textView.setText(intent.getStringExtra("platformName"));
         company_textView.setText(intent.getStringExtra("companyName"));
-        
+
+
+        // Eliminar guía
+        eliminarGuia();
         // Ir a LoginActivity
         volver();
     } // Fin onCreate
@@ -47,5 +51,19 @@ public class GuiaActivity extends AppCompatActivity {
         });
     }
 
-
+    /**
+     * Eliminar Usuario
+     *
+     * Lleva a una pantalla donde se confirman el email y la contraseña del usuario.
+     * Una vez condirmado, se elimina el usuario.
+     */
+    private void eliminarGuia()
+    {
+        eliminar_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(GuiaActivity.this, GuidesActivity.class));
+            }
+        });
+    }
 }

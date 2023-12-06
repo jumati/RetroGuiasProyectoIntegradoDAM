@@ -98,6 +98,21 @@
         app:layout_constraintTop_toBottomOf="@+id/guia_company_text" />
 
     <Button
+        android:id="@+id/guia_eliminar_guia"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/transparent"
+        android:fontFamily="@font/aaa"
+        android:text="Eliminar\nGuia"
+        android:textColor="@color/eliminar"
+        android:textSize="11sp"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
         android:id="@+id/guides_volver_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
