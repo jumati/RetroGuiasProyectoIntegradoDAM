@@ -15,10 +15,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.jm.retroguias.adapter.GuidesAdapter;
 import com.jm.retroguias.model.Guides;
+import com.jm.retroguias.model.Users;
 
 public class GuidesActivity extends AppCompatActivity {
 
@@ -27,7 +29,8 @@ public class GuidesActivity extends AppCompatActivity {
     private RecyclerView recycler;
     private GuidesAdapter guidesAdapter;
     private FirebaseFirestore firestore;
-    private ClipData.Item editar_usuario_item, favoritos_item, usuarios_item, logout_item;
+    private FirebaseDatabase database;
+    private Users user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,6 +89,12 @@ public class GuidesActivity extends AppCompatActivity {
             auth.signOut();
             startActivity(new Intent(GuidesActivity.this, LoginActivity.class));
         }
+        else if (id == R.id.menu_new_guide)
+        {
+            // Solo si es Master
+            FirebaseAuth auth = FirebaseAuth.getInstance();
+            startActivity(new Intent(GuidesActivity.this, NuevaGuiaActivity.class));
+        }
         return true;
 
         /*
@@ -123,6 +132,27 @@ public class GuidesActivity extends AppCompatActivity {
         super.onStop();
         guidesAdapter.stopListening();
     }
+
+    /**
+     * Ocultar funcionalidades isMaster
+     *
+     * Si no es máster, se ocultarán algunas funcionalidades.
+     */
+    private void isMasterFunction()
+    {
+        database = FirebaseDatabase.getInstance().getReference().getDatabase();
+
+
+    }
+
+
+
+
+
+
+
+
+
 
 
 }

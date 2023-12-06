@@ -64,6 +64,7 @@
         android:hint="Email"
         android:inputType="textEmailAddress"
         android:textAlignment="center"
+        android:textColor="@color/white"
         android:textColorHint="@color/white"
         android:textSize="17sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -80,6 +81,7 @@
         android:hint="ContraseÑa actual"
         android:inputType="textPassword"
         android:textAlignment="center"
+        android:textColor="@color/white"
         android:textColorHint="@color/white"
         android:textSize="12sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -96,6 +98,7 @@
         android:hint="Nueva contraseÑa"
         android:inputType="textPassword"
         android:textAlignment="center"
+        android:textColor="@color/white"
         android:textColorHint="@color/white"
         android:textSize="12sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -112,6 +115,7 @@
         android:hint="Confirmar contraseÑa"
         android:inputType="textPassword"
         android:textAlignment="center"
+        android:textColor="@color/white"
         android:textColorHint="@color/white"
         android:textSize="12sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -128,6 +132,7 @@
         android:hint="TelÉfono"
         android:inputType="phone"
         android:textAlignment="center"
+        android:textColor="@color/white"
         android:textColorHint="@color/white"
         android:textSize="12sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -160,7 +165,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        android:visibility="visible"/>
 
     <Button
         android:id="@+id/editar_usuario_volver_button"

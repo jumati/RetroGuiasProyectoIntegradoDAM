@@ -48,7 +48,11 @@ public class UsersActivity extends AppCompatActivity {
             @Override
             public void onClick(int position, Users user) {
                 Intent intent = new Intent(UsersActivity.this, EditarUsuarioActivity.class);
-                intent.putExtra("guideName", user.getId());
+                intent.putExtra("user_id", user.getId());
+                intent.putExtra("user_name", user.getName());
+                intent.putExtra("user_last_name", user.getLast_name());
+                intent.putExtra("user_email", user.getEmail());
+                intent.putExtra("user_phone", user.getPhone());
                 startActivity(intent);
             }
         });

@@ -1,7 +1,7 @@
 {
   "project_info": {
     "project_number": "1078098049118",
-    "databaseURL": "https://retroguias.firebaseio.com",
+    "databaseURL": "https://retroguias-e666a-default-rtdb.firebaseio.com/",
     "project_id": "retroguias-e666a",
     "storage_bucket": "retroguias-e666a.appspot.com"
   },

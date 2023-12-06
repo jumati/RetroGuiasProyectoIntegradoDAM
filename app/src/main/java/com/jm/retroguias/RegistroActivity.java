@@ -131,6 +131,7 @@ public class RegistroActivity extends AppCompatActivity {
                         databaseRef.child("Users")
                                 .child(user.getId()).setValue(user);
 
+
                         // Se cierra sesión para evitar que se mantenga logeado el usuario
                         auth.signOut();
 
@@ -169,7 +170,8 @@ public class RegistroActivity extends AppCompatActivity {
                         {
                             Toast.makeText(RegistroActivity.this,
                                     "Se ha producido un error al registrar el usuario.",
-                                    Toast.LENGTH_LONG).show();                                }
+                                    Toast.LENGTH_LONG).show();
+                        }
                     }
                 });
     }

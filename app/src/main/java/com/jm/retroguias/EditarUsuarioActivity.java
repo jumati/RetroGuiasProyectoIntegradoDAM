@@ -31,6 +31,7 @@ public class EditarUsuarioActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_editar_usuario);
+        Intent intent = getIntent();
 
         // Se recogen los campos
         name_editText = (EditText) findViewById(R.id.editar_usuario_name);
@@ -44,7 +45,12 @@ public class EditarUsuarioActivity extends AppCompatActivity {
         eliminar_button = (Button) findViewById(R.id.editar_usuario_eliminar_usuario);
         volver_button = (Button) findViewById(R.id.editar_usuario_volver_button);
 
-        auth = FirebaseAuth.getInstance();
+        name_editText.setText(intent.getStringExtra("user_name"));
+        last_name_editText.setText(intent.getStringExtra("user_last_name"));
+        email_editText.setText(intent.getStringExtra("user_email"));
+        phone_editText.setText(intent.getStringExtra("user_phone"));
+
+        //auth = FirebaseAuth.getInstance();
 
 
         // Guardar cambios
@@ -106,14 +112,14 @@ public class EditarUsuarioActivity extends AppCompatActivity {
 
 
     /**
-     * Vuelve a GuidesActivity
+     * Vuelve a UsersActivity
      */
     private void volver()
     {
         volver_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(EditarUsuarioActivity.this, GuidesActivity.class));
+                startActivity(new Intent(EditarUsuarioActivity.this, UsersActivity.class));
             }
         });
     }
