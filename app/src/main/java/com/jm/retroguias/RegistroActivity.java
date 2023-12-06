@@ -36,7 +36,7 @@ public class RegistroActivity extends AppCompatActivity {
     FirebaseUser firebaseUser;
     private EditText name_editText, last_name_editText, email_editText,
             password_editText, confirm_password_editText, phone_editText;
-    private Button registrar_button, volver_button;
+    private Button registrar_button, volver_button, limpiar_campos_boton;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,6 +50,7 @@ public class RegistroActivity extends AppCompatActivity {
         confirm_password_editText = (EditText) findViewById(R.id.registro_confirm_password);
         phone_editText = (EditText) findViewById(R.id.registro_phone);
         registrar_button = (Button) findViewById(R.id.registro_registrar_button);
+        limpiar_campos_boton = (Button) findViewById(R.id.registro_limpiar);
         volver_button = (Button) findViewById(R.id.registro_volver_button);
 
         FirebaseApp.initializeApp(this);
@@ -58,8 +59,9 @@ public class RegistroActivity extends AppCompatActivity {
 
 
         // Botón Registrar Usuario
-        Registrar();
-
+        registrar();
+        // Limpiar Campos
+        limpiarCampos();
         // Ir a LoginActivity
         volver();
     } // Fin onCreate
@@ -67,14 +69,14 @@ public class RegistroActivity extends AppCompatActivity {
     /**
      * Registra un usuario
      */
-    private void Registrar()
+    private void registrar()
     {
         registrar_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 // Comprobar validaciones
                 // Primero comprueba que no haya campos vacíos
-                if(!IsEmptyValidation()) {
+                if(!isEmptyValidation()) {
                     // Luego te dice las validaciones en el resto de campos
                     if (sizeNameValidation() && emailValidation()
                             && passwordValidation() && phoneValidation()) {
@@ -176,7 +178,25 @@ public class RegistroActivity extends AppCompatActivity {
     }
 
 
-
+    /**
+     * Limpiar campos
+     *
+     * Limpia los campos EditText y los deja vacíos
+     */
+    private void limpiarCampos()
+    {
+        limpiar_campos_boton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                name_editText.setText("");
+                last_name_editText.setText("");
+                email_editText.setText("");
+                password_editText.setText("");
+                confirm_password_editText.setText("");
+                phone_editText.setText("");
+            }
+        });
+    }
 
 
     /**
@@ -207,7 +227,7 @@ public class RegistroActivity extends AppCompatActivity {
      * Comprueba que todos los campos de esta Activity estén rellenos.
      * En caso de haber uno o más campos vacíos, mostrará un mensaje.
      */
-    private boolean IsEmptyValidation() {
+    private boolean isEmptyValidation() {
         boolean empty = false;
         if (name_editText.getText().toString().trim().isEmpty())
         {

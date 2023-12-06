@@ -75,7 +75,7 @@ public class EditarUsuarioActivity extends AppCompatActivity {
     /**
      * Guardar cambios
      *
-     * Guarda los cambios y vacía los campos
+     * Guarda los cambios
      */
     private void guardar()
     {
@@ -84,12 +84,6 @@ public class EditarUsuarioActivity extends AppCompatActivity {
             public void onClick(View view) {
                 passwordValidation();
 
-                name_editText.setText("");
-                last_name_editText.setText("");
-                old_password_editText.setText("");
-                new_password_editText.setText("");
-                confirm_password_editText.setText("");
-                phone_editText.setText("");
             }
         });
     }
