@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.regex.Pattern;
 
 public class RegistroActivity extends AppCompatActivity {
@@ -101,38 +102,34 @@ public class RegistroActivity extends AppCompatActivity {
                         // Se crea un objeto Users que contenga todos los campos
                         Users user = new Users(email, name, last_name, phone);
                         // Se insertan los datos en la base de datos
+
+                        /*
                         //databaseRef.push().setValue(user);
 
 
+
                         Map<String, Object> mapUser = new HashMap<>();
-                        mapUser.put("id", email);
+                        mapUser.put("id", UUID.randomUUID().toString());
+                        mapUser.put("email", email);
                         mapUser.put("name", name);
                         mapUser.put("last_name", last_name);
                         mapUser.put("phone", phone);
-                        List<String> fav = new ArrayList<String>();
+                        List<String> fav = new ArrayList<>();
                         mapUser.put("fav", fav);
 
                         databaseRef.child("Users").push().setValue(mapUser);
+                         */
 
+                        user.setId(UUID.randomUUID().toString());
+                        user.setEmail(email);
+                        user.setName(name);
+                        user.setLast_name(last_name);
+                        user.setPhone(phone);
+                        List<String> fav = new ArrayList<>();
+                        user.setFav(fav);
 
-                        /*
-                        // Evento para insertar los datos
-                        databaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-
-
-                            }
-
-                            // Muestra posibles errores durante el registro
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError error) {
-                                Toast.makeText(RegistroActivity.this,
-                                        "Se ha producido un error al insertar datos al usuario.",
-                                        Toast.LENGTH_LONG).show();
-                            }
-                        }); // Fin insertar los datos
-                        */
+                        databaseRef.child("Users")
+                                .child(user.getId()).setValue(user);
 
                         // Se cierra sesión para evitar que se mantenga logeado el usuario
                         auth.signOut();

@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Users {
-    private String id; // email
+    private String id;
+    private String email;
     private String name;
     private String last_name;
     private int phone;
@@ -14,9 +15,9 @@ public class Users {
     public Users() {
     }
 
-    public Users(String id, String name, String last_name, int phone)
+    public Users(String email, String name, String last_name, int phone)
     {
-        this.id = id;
+        this.email = email;
         this.name = name;
         this.last_name = last_name;
         this.phone = phone;
@@ -29,6 +30,14 @@ public class Users {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getName() {
