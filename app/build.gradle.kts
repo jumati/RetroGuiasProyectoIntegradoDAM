@@ -66,4 +66,6 @@ dependencies {
     // the latest Google Repository in the Android SDK manager
     // FirebaseUI
     implementation("com.firebaseui:firebase-ui-firestore:8.0.1")
+    // Storage
+    implementation ("com.google.firebase:firebase-storage:20.3.0")
 }

@@ -7,7 +7,7 @@ public class Guides {
     private String guide_name;
     private String platform_id;
     private String company_id;
-    //private File guide_pdf;
+    private String guide_pdf;
 
     public Guides() {}
 
@@ -52,15 +52,13 @@ public class Guides {
         this.company_id = company_id;
     }
 
-    /*
-    public File getGuide_pdf() {
+    public String getGuide_pdf() {
         return guide_pdf;
     }
 
-    public void setGuide_pdf(File guide_pdf) {
+    public void setGuide_pdf(String guide_pdf) {
         this.guide_pdf = guide_pdf;
     }
-    */
 
     @Override
     public String toString() {

@@ -21,7 +21,6 @@ public class Users {
         this.name = name;
         this.last_name = last_name;
         this.phone = phone;
-        this.isMaster = false;
     }
 
     public String getId() {

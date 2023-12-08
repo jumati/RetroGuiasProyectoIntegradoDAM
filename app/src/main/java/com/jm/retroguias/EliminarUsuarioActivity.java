@@ -17,6 +17,7 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
 
 import org.checkerframework.common.subtyping.qual.Bottom;
 
@@ -24,6 +25,7 @@ public class EliminarUsuarioActivity extends AppCompatActivity {
 
     private Button eliminar_button, volver_button;
     private  EditText email_editText, password_editText;
+    DatabaseReference databaseRef;
     FirebaseUser firebaseUser;
     AuthCredential credential;
 

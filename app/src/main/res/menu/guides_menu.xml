@@ -17,12 +17,14 @@
         android:textColor="@color/background"
         android:icon="@drawable/ic_menu_editar_usuario"/>
 
+    <!--
     <item
         android:id="@+id/menu_favoritos"
         android:title="Favoritos"
         android:fontFamily="@font/aaa"
         android:textColor="@color/background"
         android:icon="@drawable/ic_menu_fav"/>
+    -->
 
     <item
         android:id="@+id/menu_lista_usuarios"

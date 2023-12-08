@@ -1,8 +1,12 @@
 package com.jm.retroguias;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -19,6 +23,16 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.jm.retroguias.model.Guides;
+import com.jm.retroguias.model.Users;
 
 import java.util.regex.Pattern;
 
@@ -26,6 +40,7 @@ public class LoginActivity extends AppCompatActivity {
     private EditText email_editText, password_editText;
     private Button login_button, registrar_button, reset_password_button, info_button;
     FirebaseAuth auth;
+    DatabaseReference ref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +54,11 @@ public class LoginActivity extends AppCompatActivity {
         registrar_button = (Button) findViewById(R.id.login_registrar_button);
         reset_password_button = (Button) findViewById(R.id.login_recuperar_password_button);
         info_button = (Button) findViewById(R.id.login_informacion_button);
+
+        // Instancia de Auth
+        auth = FirebaseAuth.getInstance();
+        // Instancia DatabaseReference
+        ref = FirebaseDatabase.getInstance().getReference("Users");
 
         // Logearse e ir a GuidesActivity
         goLogin();
@@ -55,49 +75,6 @@ public class LoginActivity extends AppCompatActivity {
 
     } // Fin onCreate()
 
-    /**
-     * Login
-     *
-     * Realiza las validaciones y si las supera, realiza el login y accede a
-     * la lista de las guias en GuidesActivity.
-     */
-    private void Login()
-    {
-        // Validaciones
-        if(!IsEmptyValidation() && emailValidation())
-        {
-            String email = email_editText.getText().toString().trim();
-            String password = password_editText.getText().toString().trim();
-            // Instancia de Auth
-            auth = FirebaseAuth.getInstance();
-
-            auth.signInWithEmailAndPassword(email, password)
-                    .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
-                        @Override
-                        public void onSuccess(AuthResult authResult)
-                        {
-                            startActivity(new Intent(LoginActivity.this, GuidesActivity.class));
-                            // Limpiamos los campos para que cuando el usuario
-                            // se desloguee aparezcan los campos vacíos
-                            email_editText.setText("");
-                            password_editText.setText("");
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    // Si el email o la contraseña son incorrectos se muestra un mensaje.
-                    Toast.makeText(LoginActivity.this,
-                            "email o contraseña incorrectos.",
-                            Toast.LENGTH_LONG).show();
-                }
-            });
-        }
-    } // Fin Login
-
-
-
-
 
 
     /*
@@ -105,14 +82,77 @@ public class LoginActivity extends AppCompatActivity {
      */
 
     /**
-     * Logearse e ir a GuidesActivity
+     * Go Login
+     *
+     * Realiza las validaciones y si las supera, realiza el login y accede a
+     * la lista de las guias en GuidesActivity.
      */
     private void goLogin()
     {
+        Context ctx = this;
         login_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Login();
+
+                FirebaseUser firebaseUser = auth.getCurrentUser();
+
+                String email = email_editText.getText().toString().trim();
+                String password = password_editText.getText().toString().trim();
+
+                // Validaciones
+                if(!IsEmptyValidation() && emailValidation())
+                {
+                    auth.signInWithEmailAndPassword(email, password)
+                            .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
+                                @Override
+                                public void onComplete(@NonNull Task<AuthResult> task) {
+                                    if(task.isSuccessful())
+                                    {
+                                        Query query = ref.orderByChild("email")
+                                                .equalTo(email_editText.getText().toString().trim());
+                                        query.addValueEventListener(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                for(DataSnapshot snap : snapshot.getChildren())
+                                                {
+                                                    // Capturados los datos del usuario logueado
+                                                    Users user = snap.getValue(Users.class);
+                                                    // Intent para pasar los datos entre pantallas.
+                                                    Intent intent = new Intent(LoginActivity.this, GuidesActivity.class);
+                                                    String master = String.valueOf(user.isMaster());
+                                                    intent.putExtra("esMaster", master);
+
+                                                    // Limpiamos los campos para que cuando el usuario
+                                                    // se desloguee aparezcan los campos vacíos
+                                                    email_editText.setText("");
+                                                    password_editText.setText("");
+
+                                                    // cambiamos de pantalla a GuidesActivity
+                                                    startActivity(intent);
+                                                }
+                                            }
+
+                                            @Override
+                                            public void onCancelled(@NonNull DatabaseError error) {
+                                                // Si se produce algún error en el proceso, se muestra un mensaje.
+                                                Toast.makeText(LoginActivity.this,
+                                                        "Se ha producido un error en el login.",
+                                                        Toast.LENGTH_LONG).show();
+                                            }
+                                        });
+                                    }
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    // Si el email o la contraseña son incorrectos se muestra un mensaje.
+                                    Toast.makeText(LoginActivity.this,
+                                            "email o contraseña incorrectos.",
+                                            Toast.LENGTH_LONG).show();
+                                }
+                            });
+                }
             }
         });
     }

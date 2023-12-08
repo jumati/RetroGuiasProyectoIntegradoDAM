@@ -11,8 +11,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class GuiaActivity extends AppCompatActivity {
 
+    Bundle bundle;
     TextView title_textView,platform_textView, company_textView;
-
+    String guide_title, platform_id, company_id;
     private Button volver_button, eliminar_button;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,10 +27,25 @@ public class GuiaActivity extends AppCompatActivity {
         eliminar_button = (Button) findViewById(R.id.guia_eliminar_guia);
         volver_button = (Button) findViewById(R.id.guides_volver_button);
 
+        // El bundle recoge los campos del Intent de la pantalla GuidesActivity para mostrar la guía.
+        bundle = getIntent().getExtras();
+        if(bundle != null)
+        {
+            title_textView = findViewById(R.id.guia_title);
+            platform_textView = findViewById(R.id.guia_platform);
+            //company_textView = findViewById(R.id.guia_company);
+            guide_title = findViewById(R.id.guia_title).toString();
+            platform_id = findViewById(R.id.guia_platform).toString();
+            //company_id = findViewById(R.id.guia_company).toString();
+        }
+
+
+        /*
+        // Código para GuidesActivity y GuidesAdapter con Firestore.
         title_textView.setText(intent.getStringExtra("guideName"));
         platform_textView.setText(intent.getStringExtra("platformName"));
         company_textView.setText(intent.getStringExtra("companyName"));
-
+        */
 
         // Eliminar guía
         eliminarGuia();

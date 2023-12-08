@@ -1,6 +1,7 @@
 package com.jm.retroguias;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -12,10 +13,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
@@ -26,6 +29,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.jm.retroguias.model.Companies;
 import com.jm.retroguias.model.Guides;
 import com.jm.retroguias.model.Platforms;
@@ -40,10 +47,10 @@ public class NuevaGuiaActivity extends AppCompatActivity {
 
     // Al utilizar un único DatabaseReference, los datos se mezclan.
     // Al separar un DatabaseReference para cada tabla funciona correctamente.
-    DatabaseReference guideRef, platformRef, companyRef;
-
+    DatabaseReference guideRef, platformRef, companyRef, storageRef;
+    StorageReference storageReference;
     FirebaseDatabase database;
-    private EditText name_editText;
+    private EditText name_editText, select_file;
     private Button guardar_button, limpiar_button, volver_button;
     private String platform_selected, company_selected;
     Spinner spinner_platform, spinner_company;
@@ -53,6 +60,7 @@ public class NuevaGuiaActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_nueva_guia);
         name_editText = (EditText) findViewById(R.id.nueva_guia_name);
+        select_file = (EditText) findViewById(R.id.nueva_guia_select_file);
         // Botones
         guardar_button = (Button) findViewById(R.id.nueva_guia_guardar);
         limpiar_button = (Button) findViewById(R.id.nueva_guia_limpiar);
@@ -65,10 +73,25 @@ public class NuevaGuiaActivity extends AppCompatActivity {
         companyRef = FirebaseDatabase.getInstance().getReference();
 
         FirebaseApp.initializeApp(this);
+        // Conexión con la base de datos
+        database = FirebaseDatabase.getInstance();
+        // Referencia a la tabla Users de la clase Users.java
+        guideRef = database.getReference(Guides.class.getSimpleName());
+        /*
+        // Conexión con Storage
+        storageReference = FirebaseStorage.getInstance().getReference();
+        storageRef = FirebaseDatabase.getInstance().getReference("Guides");
+
+        select_file.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                selectPDF();
+            }
+        });
+         */
 
         spinnerPlatform();
         spinnerCompany();
-
 
         // Botón Guardar
         guardar();
@@ -77,8 +100,6 @@ public class NuevaGuiaActivity extends AppCompatActivity {
         // Ir a LoginActivity
         volver();
     } // onCreate
-
-
 
 
 
@@ -99,25 +120,25 @@ public class NuevaGuiaActivity extends AppCompatActivity {
         guideRef = database.getReference(Guides.class.getSimpleName());
 
         guideRef.child(guide.getGuide_id()).setValue(guide).addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if(task.isSuccessful())
-                        {
-                            // Se muestra un mensaje de que el usuario se ha registrado correctamente.
-                            Toast.makeText(NuevaGuiaActivity.this,
-                                    "Guía registrada correctamente.",
-                                    Toast.LENGTH_LONG).show();
-                            // Limpiamos el campo name_editText
-                            name_editText.setText("");
-                        }
-                        else
-                        {
-                            Toast.makeText(NuevaGuiaActivity.this,
-                                    "Se ha producido un error al registrar la guía.",
-                                    Toast.LENGTH_LONG).show();
-                        }
-                    }
-                });
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if(task.isSuccessful())
+                {
+                    // Se muestra un mensaje de que el usuario se ha registrado correctamente.
+                    Toast.makeText(NuevaGuiaActivity.this,
+                            "Guía registrada correctamente.",
+                            Toast.LENGTH_LONG).show();
+                    // Limpiamos el campo name_editText
+                    name_editText.setText("");
+                }
+                else
+                {
+                    Toast.makeText(NuevaGuiaActivity.this,
+                            "Se ha producido un error al registrar la guía.",
+                            Toast.LENGTH_LONG).show();
+                }
+            }
+        });
     } // Fin registrarGuia()
 
 
@@ -149,6 +170,112 @@ public class NuevaGuiaActivity extends AppCompatActivity {
         });
     }
 
+
+    /*
+    /**
+     * Seleccionar el .PDF
+     *
+    private void selectPDF()
+    {
+        Intent intent = new Intent();
+        intent.setType("application/pdf");
+        intent.setAction(intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "PDF Seleccionado."), 12);
+    }
+
+    /**
+     * onActivityResult - Guardar cambios
+     *
+     * Registra la nueva guía en la base de datos seleccionando la plataforma y compañía
+     * Primero crea el archivo seleccionado en formato .pdf,
+     * después se llama al método registrarGuia al que se le añaden como parámetros
+     * los métodos registrarPlataforma() y registrarCompany() que devuelven las id
+     * de cada dato.
+     *
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == 12 && resultCode == RESULT_OK && data != null && data.getData() != null)
+        {
+            select_file.setText(data.getDataString()
+                    .substring(data.getDataString().lastIndexOf("/") + 1));
+
+            guardar_button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    // Validaciones
+                    if(!isEmptyValidation())
+                    {
+                        if(sizeNameValidation())
+                        {
+                            // Se llama al método que registra las guías introduciendo
+                            // como parámetros las id de la plataforma y la compañía seleccionadas.
+                            registrarGuia(platform_selected, company_selected, data.getData());
+                        }
+                    }
+                }
+            });
+        }
+
+    }
+
+    /**
+     * Registra la nueva guía.
+     *
+     * Recibe los id de la plataforma y la compañía.
+     * Posteriormente almacena la nueva guía en la base de datos.
+     *
+    private void registrarGuia(String platform_id, String company_id, Uri file)
+    {
+        // Se sube el archivo pdf a Storage
+        StorageReference fileRef = storageReference
+                .child("uploadPDF" + System.currentTimeMillis() + ".pdf");
+        fileRef.putFile(file).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+
+            }
+        }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onProgress(@NonNull UploadTask.TaskSnapshot snapshot) {
+                Task<Uri> uriTask = snapshot.getStorage().getDownloadUrl();
+                while (!uriTask.isComplete());
+                Uri uri = uriTask.getResult();
+
+
+                Guides guide = new Guides(UUID.randomUUID().toString(), name_editText.getText().toString().trim(),
+                        platform_id, company_id, uri.toString());
+
+                guideRef.child(guide.getGuide_id()).setValue(guide).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if(task.isSuccessful())
+                        {
+                            // Se muestra un mensaje de que el usuario se ha registrado correctamente.
+                            Toast.makeText(NuevaGuiaActivity.this,
+                                    "Guía registrada correctamente.",
+                                    Toast.LENGTH_LONG).show();
+                            // Limpiamos el campo name_editText
+                            name_editText.setText("");
+                        }
+                        else
+                        {
+                            Toast.makeText(NuevaGuiaActivity.this,
+                                    "Se ha producido un error al registrar la guía.",
+                                    Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
+            }
+        });
+
+
+
+
+    } // Fin registrarGuia()
+
+    */
 
     /**
      * Limpiar campos
