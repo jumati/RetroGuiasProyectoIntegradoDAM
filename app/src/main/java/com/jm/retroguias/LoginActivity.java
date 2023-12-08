@@ -117,10 +117,23 @@ public class LoginActivity extends AppCompatActivity {
                                                 {
                                                     // Capturados los datos del usuario logueado
                                                     Users user = snap.getValue(Users.class);
-                                                    // Intent para pasar los datos entre pantallas.
+                                                    // Intent para pasar los datos a GuidesActivity.
                                                     Intent intent = new Intent(LoginActivity.this, GuidesActivity.class);
                                                     String master = String.valueOf(user.isMaster());
                                                     intent.putExtra("esMaster", master);
+
+                                                    // Intent para pasar los datos a EditarUsuarioLogueadoActivity.
+                                                    Intent intentEdit = new Intent(LoginActivity.this, EditarUsuarioLogueadoActivity.class);
+                                                    String emailEdit = String.valueOf(user.getEmail());
+                                                    intentEdit.putExtra("email", emailEdit);
+                                                    String idEdit = String.valueOf(user.getEmail());
+                                                    intentEdit.putExtra("id", idEdit);
+                                                    String nameEdit = String.valueOf(user.getName());
+                                                    intentEdit.putExtra("name", nameEdit);
+                                                    String last_nameEdit = String.valueOf(user.getLast_name());
+                                                    intentEdit.putExtra("last_name", last_nameEdit);
+                                                    String phoneEdit = String.valueOf(user.getPhone());
+                                                    intentEdit.putExtra("phone", phoneEdit);
 
                                                     // Limpiamos los campos para que cuando el usuario
                                                     // se desloguee aparezcan los campos vacíos

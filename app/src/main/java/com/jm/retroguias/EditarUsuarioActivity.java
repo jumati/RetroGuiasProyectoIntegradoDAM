@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,6 +17,11 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.jm.retroguias.model.Users;
 
 import java.util.regex.Pattern;
@@ -24,10 +30,12 @@ import io.reactivex.rxjava3.annotations.NonNull;
 
 public class EditarUsuarioActivity extends AppCompatActivity {
 
-    private EditText name_editText, last_name_editText, email_editText, phone_editText,
+    private EditText name_editText, last_name_editText, phone_editText,
             old_password_editText, new_password_editText, confirm_password_editText;
-    private Button guardar_button, volver_button, eliminar_button;
+    private TextView email_editText;
+    private Button guardar_button, volver_button;
     FirebaseAuth auth;
+    DatabaseReference ref;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_editar_usuario);
@@ -36,13 +44,12 @@ public class EditarUsuarioActivity extends AppCompatActivity {
         // Se recogen los campos
         name_editText = (EditText) findViewById(R.id.editar_usuario_name);
         last_name_editText = (EditText) findViewById(R.id.editar_usuario_last_name);
-        email_editText = (EditText) findViewById(R.id.editar_usuario_email);
+        email_editText = (TextView) findViewById(R.id.editar_usuario_email);
         old_password_editText = (EditText) findViewById(R.id.editar_usuario_old_password);
         new_password_editText = (EditText) findViewById(R.id.editar_usuario_new_password);
         confirm_password_editText = (EditText) findViewById(R.id.editar_usuario_confirm_new_password);
         phone_editText = (EditText) findViewById(R.id.editar_usuario_phone);
         guardar_button = (Button) findViewById(R.id.editar_usuario_guardar_cambios_button);
-        eliminar_button = (Button) findViewById(R.id.editar_usuario_eliminar_usuario);
         volver_button = (Button) findViewById(R.id.editar_usuario_volver_button);
 
         name_editText.setText(intent.getStringExtra("user_name"));
@@ -55,8 +62,6 @@ public class EditarUsuarioActivity extends AppCompatActivity {
 
         // Guardar cambios
         guardar();
-        // Eliminar usuario
-        eliminarUsuario();
         // Ir a LoginActivity
         volver();
     } // Fin onCreate
@@ -88,18 +93,48 @@ public class EditarUsuarioActivity extends AppCompatActivity {
         guardar_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                /*
                 passwordValidation();
 
+                Query query = ref.orderByChild("email")
+                        .equalTo(email_editText.getText().toString().trim());
+                query.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@androidx.annotation.NonNull DataSnapshot snapshot) {
+                        for(DataSnapshot snap : snapshot.getChildren())
+                        {
+                            // Capturados los datos del usuario logueado
+                            Users user = snap.getValue(Users.class);
+                            // Se modifican los campos
+                            user.setName(name_editText.getText().toString().trim());
+                            user.setName(last_name_editText.getText().toString().trim());
+                            user.setName(phone_editText.getText().toString().trim());
+                            // Se inserta en la base de datos
+                            ref.child("Users").child(user.getId()).setValue(user);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@androidx.annotation.NonNull DatabaseError error) {
+                        // Si se produce algún error en el proceso, se muestra un mensaje.
+                        Toast.makeText(EditarUsuarioActivity.this,
+                                "Se ha producido un error al editar el usuario.",
+                                Toast.LENGTH_LONG).show();
+                    }
+                });
+
+                 */
             }
         });
     }
 
-    /**
+    /*
+    **
      * Eliminar Usuario
      *
      * Lleva a una pantalla donde se confirman el email y la contraseña del usuario.
      * Una vez condirmado, se elimina el usuario.
-     */
+     *
     private void eliminarUsuario()
     {
         eliminar_button.setOnClickListener(new View.OnClickListener() {
@@ -109,7 +144,7 @@ public class EditarUsuarioActivity extends AppCompatActivity {
             }
         });
     }
-
+*/
 
     /**
      * Vuelve a UsersActivity
@@ -119,7 +154,7 @@ public class EditarUsuarioActivity extends AppCompatActivity {
         volver_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(EditarUsuarioActivity.this, UsersActivity.class));
+                startActivity(new Intent(EditarUsuarioActivity.this, GuidesActivity.class));
             }
         });
     }

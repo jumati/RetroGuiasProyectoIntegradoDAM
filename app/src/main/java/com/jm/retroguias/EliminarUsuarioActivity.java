@@ -77,13 +77,48 @@ public class EliminarUsuarioActivity extends AppCompatActivity {
                                                     public void onComplete(@NonNull Task<Void> task2) {
                                                         if(task2.isSuccessful())
                                                         {
-                                                            Toast.makeText(EliminarUsuarioActivity.this,
-                                                                    "Se ha eliminado el usuario correctamente.",
-                                                                    Toast.LENGTH_LONG).show();
 
-                                                            FirebaseAuth.getInstance().signOut();
+                                                            // ELIMINAR DE LA TABLA
+                                                            firebaseUser.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                                @Override
+                                                                public void onComplete(@NonNull Task<Void> task) {
 
-                                                            // FALTA ELIMINAR DE LA TABLA
+
+                                                                    // Limpiamos los campos para que cuando el usuario
+                                                                    // se desloguee aparezcan los campos vacíos
+                                                                    email_editText.setText("");
+                                                                    password_editText.setText("");
+                                                                    // Enviamos un mensaje al usuario
+                                                                    Toast.makeText(EliminarUsuarioActivity.this,
+                                                                            "Se ha eliminado el usuario correctamente.",
+                                                                            Toast.LENGTH_LONG).show();
+
+                                                                    // Se cierra la sesión
+                                                                    FirebaseAuth.getInstance().signOut();
+
+                                                                    // Cambiamos de pantalla a LoginActiviti
+                                                                    startActivity(new Intent(EliminarUsuarioActivity.this, LoginActivity.class));
+
+                                                                }
+                                                            }).addOnFailureListener(new OnFailureListener() {
+                                                                @Override
+                                                                public void onFailure(@NonNull Exception e) {
+
+                                                                    // Enviamos un mensaje al usuario
+                                                                    Toast.makeText(EliminarUsuarioActivity.this,
+                                                                            "Ha ocurrido un error al eliminar el usuario.",
+                                                                            Toast.LENGTH_LONG).show();
+                                                                }
+                                                            });
+
+                                                            // Limpiamos los campos para que cuando el usuario
+                                                            // se desloguee aparezcan los campos vacíos
+                                                            email_editText.setText("");
+                                                            password_editText.setText("");
+
+                                                            // cambiamos de pantalla a LoginActiviti
+                                                            startActivity(new Intent(EliminarUsuarioActivity.this, LoginActivity.class));
+
                                                         }
                                                     }
                                                 }).addOnFailureListener(new OnFailureListener() {

@@ -45,6 +45,7 @@ public class GuidesActivity extends AppCompatActivity {
     ValueEventListener eventListener;
     private Users user;
     List<Guides> guidesList;
+    boolean master;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,6 +114,9 @@ public class GuidesActivity extends AppCompatActivity {
             }
         });
 
+
+        // Oculta o muestra accedos del toolbar dependiendo de si es master o no
+        master = Boolean.parseBoolean(getIntent().getStringExtra("esMaster"));
     }
 
 
@@ -120,7 +124,8 @@ public class GuidesActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.guides_menu, menu);
 
-        boolean master = Boolean.parseBoolean(getIntent().getStringExtra("esMaster"));
+        // Oculta o muestra accedos del toolbar dependiendo de si es master o no
+        master = Boolean.parseBoolean(getIntent().getStringExtra("esMaster"));
 
         if(!master)
         {

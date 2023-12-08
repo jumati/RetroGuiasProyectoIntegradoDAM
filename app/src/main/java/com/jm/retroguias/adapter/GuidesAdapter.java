@@ -164,7 +164,7 @@ public class GuidesAdapter extends FirestoreRecyclerAdapter<Guides, GuidesAdapte
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            title_textView = itemView.findViewById(R.id.guia_title);
+            title_textView = itemView.findViewById(R.id.item_guia_title);
             platform_textView = itemView.findViewById(R.id.guia_platform);
             fav_cb = itemView.findViewById(R.id.item_guide_fav);
         }
